@@ -9,17 +9,11 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 
-# 🔐 OpenRouter setup
+# 🔐 OpenRouter setup (classic OpenAI client pattern)
 import openai
-from openai import OpenAI
 
 openai.api_base = "https://openrouter.ai/api/v1"
 openai.api_key = st.secrets["OPENROUTER_API_KEY"]
-
-client = OpenAI(
-    base_url=openai.api_base,
-    api_key=openai.api_key
-)
 
 @st.cache_data
 def load_data():
@@ -131,7 +125,7 @@ def main():
             """
             with st.spinner("Asking AI via OpenRouter..."):
                 try:
-                    response = client.chat.completions.create(
+                    response = openai.ChatCompletion.create(
                         model="mistralai/mistral-7b-instruct",
                         messages=[
                             {"role": "system", "content": "You are a helpful real estate data analyst."},
@@ -140,7 +134,7 @@ def main():
                         max_tokens=1500,
                         temperature=0.7
                     )
-                    st.session_state.ai_explanation = response.choices[0].message.content
+                    st.session_state.ai_explanation = response.choices[0].message["content"]
                 except Exception as e:
                     st.error(f"AI request failed: {e}")
         else:
@@ -165,7 +159,7 @@ def main():
             """,
             unsafe_allow_html=True
         )
-        st.markdown("<br>", unsafe_allow_html=True)  # Adds spacing before expander
+        st.markdown("<br>", unsafe_allow_html=True)
 
     with st.expander("Explore the Data"):
         st.write("Here's a preview of the dataset:")

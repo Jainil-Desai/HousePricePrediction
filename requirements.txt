@@ -1,4 +1,5 @@
 streamlit==1.45.0
 seaborn==0.13.2
+scikit-learn==1.7.0
 xgboost==2.0.3
 openai==1.30.1
